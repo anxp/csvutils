@@ -5,35 +5,35 @@ import (
 	"os"
 )
 
-type CSVReaderWriter interface {
-	NewCSV() *CSV
-	Init([][]string) *CSV
-	Load(string) *CSV
+type CSVSimpleHandler interface {
+	NewCSV() *csvObj
+	Init([][]string) *csvObj
+	Load(string) *csvObj
 	Dump(string) bool
 	GetAsSlice() [][]string
 }
 
-type CSV struct {
+type csvObj struct {
 	csvData [][]string
 }
 
 // Returns pointer to new empty CSV object.
-func NewCSV() *CSV {
-	return &CSV{}
+func NewCSV() *csvObj {
+	return &csvObj{}
 }
 
 // Populates object with values from data.
 // Returns "this".
-func (c *CSV) Init(data [][]string) *CSV {
+func (c *csvObj) Init(data [][]string) *csvObj {
 	(*c).csvData = data
 
 	return c
 }
 
 // Simple dump data to a file. If file exists it will be overwritten.
-func (c *CSV) Dump(fileName string) bool {
+func (c *csvObj) Dump(fileName string) bool {
 
-	file, err := os.OpenFile(fileName, os.O_WRONLY, os.FileMode(0644))
+	file, err := os.OpenFile(fileName, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, os.FileMode(0644))
 
 	if err != nil {
 		panic(err)
@@ -52,7 +52,7 @@ func (c *CSV) Dump(fileName string) bool {
 // Load data from CSV file to CSV object and returns "this" (CSV object itself).
 // Empty strings will be ignored.
 // Use .GetAsSlice method to get CSV data as 2D slice.
-func (c *CSV) Load(fileName string) *CSV {
+func (c *csvObj) Load(fileName string) *csvObj {
 	file, err := os.Open(fileName)
 
 	if err != nil {
@@ -73,6 +73,6 @@ func (c *CSV) Load(fileName string) *CSV {
 }
 
 // Returns CSV data in useful format as simple 2D slice.
-func (c *CSV) GetAsSlice() [][]string {
+func (c *csvObj) GetAsSlice() [][]string {
 	return (*c).csvData
 }
